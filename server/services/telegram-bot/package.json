@@ -1,0 +1,16 @@
+{
+  "name": "on-server-telegram-bot",
+  "version": "1.0.0",
+  "description": "Polling-mode Telegram bot that reports on-server status via the control-api",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.30.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

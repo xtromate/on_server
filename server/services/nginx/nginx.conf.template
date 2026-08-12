@@ -1,0 +1,62 @@
+# on_server nginx config template.
+#
+# scripts/setup-services.sh copies this into $PREFIX/etc/nginx/nginx.conf
+# (backing up the original first) after substituting the placeholders below
+# with real paths using sed:
+#   __NGINX_DEMO_ROOT__     -> absolute path to server/services/nginx/demo
+#   __CONTROL_API_PORT__    -> control-api's port (default 8420)
+#   __PHP_FPM_SOCK__        -> php-fpm listen address (default 127.0.0.1:9000)
+#
+# Ports below (8080 for nginx) are deliberately >1024 since Termux runs
+# unprivileged and can't bind <1024 without root.
+
+worker_processes 1;
+error_log __NGINX_PREFIX__/var/log/nginx/error.log warn;
+pid __NGINX_PREFIX__/var/run/nginx.pid;
+
+events {
+    worker_connections 512;
+}
+
+http {
+    include __NGINX_PREFIX__/etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    access_log __NGINX_PREFIX__/var/log/nginx/access.log;
+    sendfile on;
+    keepalive_timeout 65;
+
+    server {
+        listen 0.0.0.0:8080;
+        server_name _;
+
+        root __NGINX_DEMO_ROOT__;
+        index index.html;
+
+        # Static demo page — proves nginx itself is serving real content.
+        location / {
+            try_files $uri $uri/ =404;
+        }
+
+        # PHP demo page — proves php-fpm is wired up behind nginx.
+        location ~ \.php$ {
+            fastcgi_pass __PHP_FPM_SOCK__;
+            fastcgi_index info.php;
+            include __NGINX_PREFIX__/etc/nginx/fastcgi_params;
+            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+
+        # Friendly reverse-proxy path to control-api, so the phone's normal
+        # web port (8080) can also reach the API without exposing 8420
+        # separately. The Flutter app still talks to control-api's own port
+        # directly by default; this path is mainly for browser/demo use.
+        location /api/ {
+            proxy_pass http://127.0.0.1:__CONTROL_API_PORT__/api/;
+            proxy_http_version 1.1;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+}

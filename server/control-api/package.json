@@ -1,0 +1,17 @@
+{
+  "name": "on-server-control-api",
+  "version": "1.0.0",
+  "description": "Control API that runs inside Termux and manages the phone-as-a-server stack",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.22.2",
+    "multer": "^2.2.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
