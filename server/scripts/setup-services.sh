@@ -50,6 +50,7 @@ ON_SERVER_TOKEN="$TOKEN" node -e "
 const { loadConfig, saveConfig, CONFIG_PATH } = require('$CONTROL_API_DIR/src/config.js');
 const cfg = loadConfig();
 cfg.token = process.env.ON_SERVER_TOKEN;
+cfg.tokenClaimed = false;
 saveConfig(cfg);
 console.log('    token written to ' + CONFIG_PATH);
 "

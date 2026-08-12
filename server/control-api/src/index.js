@@ -5,6 +5,7 @@ const { loadConfig, ensureStateDir } = require('./config');
 const { requireAuth } = require('./auth');
 
 const healthRoute = require('./routes/health');
+const setupRoute = require('./routes/setup');
 const servicesRoute = require('./routes/services');
 const appsRoute = require('./routes/apps');
 const filesRoute = require('./routes/files');
@@ -30,9 +31,12 @@ app.use((req, res, next) => {
   next();
 });
 
-// GET /api/health is the only unauthenticated route — mounted before the
-// auth gate below so it never hits requireAuth.
+// GET /api/health and the /api/setup/* pairing routes are the only
+// unauthenticated routes — mounted before the auth gate below so they never
+// hit requireAuth. See routes/setup.js for why /api/setup/claim is safe to
+// leave unauthenticated (single-use, closes itself after first claim).
 app.use('/api', healthRoute);
+app.use('/api', setupRoute);
 
 app.use('/api', requireAuth);
 

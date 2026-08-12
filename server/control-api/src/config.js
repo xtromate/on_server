@@ -23,6 +23,11 @@ const DEFAULT_CONFIG = {
   host: '0.0.0.0',
   publicHost: null, // if set, used instead of the request's Host header for app URLs
   token: null,
+  // True once the freshly-generated token has been fetched exactly once via
+  // POST /api/setup/claim (used by the in-app Setup Wizard to pair itself
+  // with a headless install with no other secure channel available). See
+  // routes/setup.js.
+  tokenClaimed: false,
   telegram: {
     enabled: false,
     token: null,
