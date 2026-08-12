@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Lets the app ask Termux to run commands on its behalf (Setup Wizard). -->
+    <uses-permission android:name="com.termux.permission.RUN_COMMAND"/>
     <application
         android:label="on_server"
         android:name="${applicationName}"
@@ -42,5 +44,8 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Required on Android 11+ so PackageManager can see Termux is
+             installed and so the RUN_COMMAND intent resolves. -->
+        <package android:name="com.termux"/>
     </queries>
 </manifest>
